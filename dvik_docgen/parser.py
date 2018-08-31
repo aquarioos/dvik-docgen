@@ -8,7 +8,7 @@ import re
 NAME_SPLIT_TXT = '--'
 
 
-def process_package(path, recursive, output_dir, module=None):
+def process_package(path, recursive, output_dir, res_lines, module=None):
     """Wybiera pliki pythonowe w pakiecie. Wywołuje _process_file() dla każdego z nich.
 
     Args:
@@ -23,13 +23,14 @@ def process_package(path, recursive, output_dir, module=None):
 
     for fname, fpath in map(lambda fname: (fname, os.path.join(path, fname)), os.listdir(path)):
         if os.path.isdir(fpath) and '__init__.py' in os.listdir(fpath) and recursive:
-            process_package(path=fpath, recursive=recursive, output_dir=output_dir, module=curr_module)
+            process_package(path=fpath, recursive=recursive, output_dir=output_dir, module=curr_module,
+                            res_lines=res_lines)
         if not fname.endswith('.py'):
             continue
-        process_file(path=fpath, output_dir=output_dir, module=curr_module)
+        process_file(path=fpath, output_dir=output_dir, res_lines=res_lines, module=curr_module)
 
 
-def process_file(path, output_dir, module=None):
+def process_file(path, output_dir, res_lines, module=None):
     """Parsuje plik pythonowy w poszukiwaniu docstringów.
 
     Args:
@@ -47,6 +48,11 @@ def process_file(path, output_dir, module=None):
         out_file_name = NAME_SPLIT_TXT.join([module_pref, file_name])
     else:
         out_file_name = file_name
+
+    if out_file_name.endswith('.py'):
+        out_file_name = out_file_name[:-3]
+    if not out_file_name.endswith('.rst'):
+        out_file_name = '{}.rst'.format(out_file_name)
 
     out_file_path = os.path.join(output_dir, out_file_name)
 
@@ -74,7 +80,7 @@ def process_file(path, output_dir, module=None):
 
         file_lines.append((spaces, flag, l))
 
-    res_lines = []
+    # res_lines = []
 
     _process_code_block(
         block_lines=file_lines,
@@ -83,13 +89,6 @@ def process_file(path, output_dir, module=None):
         header=file_name,
         module=module,
     )
-
-    if len(res_lines) > 0:
-        file_content = '\n'.join(res_lines)
-        with io.open(out_file_path, 'w', encoding='utf8') as fp:
-            fp.write(file_content)
-        print("zapisano do pliku {}".format(out_file_path))
-        return "{}.rst".format(out_file_name)
 
 
 def _process_code_block(block_lines, block_type, res_lines, header=None, module=None):
