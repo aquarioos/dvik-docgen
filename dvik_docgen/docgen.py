@@ -29,7 +29,7 @@ def _parse_args():
 
 def _process_path(path, recursive, output_dir, base_module=None):
     """Przetwarza ścieżkę.
-    Rozpoznaje, czy ścieżka jest do pakiety, czy do konkretnego pliku .py.
+    Rozpoznaje, czy ścieżka jest do pakietu, czy do konkretnego pliku .py.
     Jeśli nie jest ani jednym, ani drugim, to nic się nie dzieje.
 
     Args:
