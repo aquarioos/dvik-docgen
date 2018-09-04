@@ -96,7 +96,7 @@ def _validate_dir(dir_path):
 
 
 def parse_file(file_path, file_name):
-    """Parsuje plik w poszukiwaniu docstringów. Zwraca je w postaci
+    """Parsuje plik w poszukiwaniu docstringów. Zwraca je w postaci słownika, gdzie kluczem jest nazwa bloku, a wartością lista linii dostringa.
 
     Args:
         file_path (str): ścieżka do pliku do sparsowania
